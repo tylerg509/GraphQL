@@ -8,6 +8,16 @@ const {
     GraphQLSchema
 } = graphql;
 
+
+const CompanyType = new GraphyQLObjectType({
+    name: 'Company',
+    fields: {
+        id: { type: GraphyQLString },
+        name: { type: GraphQLString},
+        description: { type: GraphQLString }
+    }
+})
+
 // name = describe the type we are defining
 // fields =  tell graphql about all properties that the user has
 const UserType = new GraphQLObjectType({
@@ -15,7 +25,10 @@ const UserType = new GraphQLObjectType({
     fields: {
         id: {type: graphql.GraphQLString},
         firstName: {type: graphql.GraphQLString} ,
-        age: {type: graphql.GraphQLInt}
+        age: {type: graphql.GraphQLInt},
+        company: {
+            type: CompanyType // This is how you create relationship between company type and user type
+        }
     }
 })
 
