@@ -4,6 +4,7 @@ const axios = require('axios')
 const {
     GraphQLObjectType,
     GraphQLInt,
+    GraphQLList,
     GraphQLString,
     GraphQLSchema
 } = graphql;
@@ -11,18 +12,25 @@ const {
 
 const CompanyType = new GraphQLObjectType({
     name: 'Company',
-    fields: {
+    fields: () => ({
         id: { type: GraphQLString },
         name: { type: GraphQLString},
-        description: { type: GraphQLString }
-    }
+        description: { type: GraphQLString },
+        users: {
+            type: new GraphQLList(UserType), // note that UserType makes referece to companytype and vice versa. So we need to wrap fields in an arrow function
+            resolve(parentValue, args) {
+                return axios.get(`http://localhost:3000/companies/${parentValue.id}/users`)
+                .then(res => res.data)
+            }
+        }
+    })
 })
 
 // name = describe the type we are defining
 // fields =  tell graphql about all properties that the user has
 const UserType = new GraphQLObjectType({
     name: 'User',
-    fields: {
+    fields: () => ({
         id: {type: graphql.GraphQLString},
         firstName: {type: graphql.GraphQLString} ,
         age: {type: graphql.GraphQLInt},
@@ -33,7 +41,7 @@ const UserType = new GraphQLObjectType({
                 .then(res => res.data)
             }
         }
-    }
+    })
 })
 
 //  Allow GraphQl to jump to a specific node in the graph of all data
