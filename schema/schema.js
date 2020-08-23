@@ -9,10 +9,10 @@ const {
 } = graphql;
 
 
-const CompanyType = new GraphyQLObjectType({
+const CompanyType = new GraphQLObjectType({
     name: 'Company',
     fields: {
-        id: { type: GraphyQLString },
+        id: { type: GraphQLString },
         name: { type: GraphQLString},
         description: { type: GraphQLString }
     }
@@ -27,7 +27,11 @@ const UserType = new GraphQLObjectType({
         firstName: {type: graphql.GraphQLString} ,
         age: {type: graphql.GraphQLInt},
         company: {
-            type: CompanyType // This is how you create relationship between company type and user type
+            type: CompanyType, // This is how you create relationship between company type and user type
+            resolve(parentValue, args) { // In the graphQl server there is no property company so we need a resolve function
+                return axios.get(`http://localhost:3000/companies/${parentValue.companyId}`) // make request to get company
+                .then(res => res.data)
+            }
         }
     }
 })
