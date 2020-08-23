@@ -32,9 +32,9 @@ const CompanyType = new GraphQLObjectType({
 const UserType = new GraphQLObjectType({
     name: 'User',
     fields: () => ({
-        id: {type: graphql.GraphQLString},
-        firstName: {type: graphql.GraphQLString} ,
-        age: {type: graphql.GraphQLInt},
+        id: {type: GraphQLString},
+        firstName: {type: GraphQLString} ,
+        age: {type: GraphQLInt},
         company: {
             type: CompanyType, // This is how you create relationship between company type and user type
             resolve(parentValue, args) { // In the graphQl server there is no property company so we need a resolve function
@@ -82,6 +82,16 @@ const mutation = new GraphQLObjectType({
             },
             resolve(parentValue, { firstName, age }) {
                 return axios.post('http://localhost:3000/users', {firstName, age})
+                .then(res => res.data)
+            }
+        },
+        deleteUser: {
+            type: UserType,
+            args: {
+                id: {type: new GraphQLNonNull(graphql.GraphQLString)},
+            },
+            resolve(parentValue, { id }) {
+                return axios.delete(`http://localhost:3000/users/${id}`)
                 .then(res => res.data)
             }
         }
